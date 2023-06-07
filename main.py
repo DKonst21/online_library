@@ -11,5 +11,4 @@ for number_books in range(1,11):
 
     filename = f'books/id{number_books}.txt'
     with open(filename, 'wb') as file:
-        print(file)
         file.write(response.content)
