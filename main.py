@@ -3,7 +3,7 @@ import argparse
 import sys
 from pathlib import Path
 from bs4 import BeautifulSoup
-from tululu import download_txt, download_image, parse_book_page
+from tululu import download_txt, download_image, parse_book_page, get_comments
 from urllib.parse import urljoin, unquote, urlparse
 
 
@@ -32,6 +32,7 @@ def check_for_redirect(start, end):
                 download_image(f'https://tululu.org{image}', image)
 
                 parse_book_page(title_text, find_genre)
+                get_comments(comments)
 
         except requests.exceptions.HTTPError():
             raise Exception(response.url).with_traceback()

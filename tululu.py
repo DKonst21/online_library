@@ -38,6 +38,7 @@ def parse_book_page(title_text, find_genre):
         print(genre.find('a')['title'].split('-')[0])
     print()
 
+
 def get_comments(comments):
     for val in comments[0:]:
         print(val.text.split('black')[0].split(')')[1])
