@@ -17,6 +17,7 @@ def check_for_redirect():
         title_tag = soup.find('h1')
         title_text = title_tag.text.split(':')
         title_text_strip = title_text[0].strip()
+        comments = soup.find_all(class_='texts')
 
         try:
             if response.history == []:
@@ -26,6 +27,10 @@ def check_for_redirect():
                 image = unquote(urlparse(
                     urljoin('https://tululu.org', soup.find(class_='bookimage').find('img')['src'])).path)
                 download_image(f'https://tululu.org{image}', image)
+                print(title_text_strip)
+                for val in comments[0:]:
+                    print(val.text.split('black')[0].split(')')[1])
+                print()
 
         except requests.exceptions.HTTPError():
             raise Exception(response.url).with_traceback()

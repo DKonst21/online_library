@@ -11,9 +11,9 @@ def download_txt(url, filename, folder='books/'):
     name = sanitize_filename(f'{name_split[0]}.txt')
     path = os.path.join(folder, name)
 
-    with open(path, 'wb') as file:
-        file.write(response.content)
-    return path
+    # with open(path, 'wb') as file:
+    #     file.write(response.content)
+    # return path
 
 
 def download_image(url, filename, folder='image/'):
@@ -25,7 +25,7 @@ def download_image(url, filename, folder='image/'):
     name = sanitize_filename(f'{name_split[2]}')
     path = os.path.join(folder, name)
     
-    with open(path, 'wb') as file:
-        file.write(response.content)
+    # with open(path, 'wb') as file:
+    #     file.write(response.content)
     # return path
 
