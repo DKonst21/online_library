@@ -1,4 +1,6 @@
 import requests
+import argparse
+import sys
 from pathlib import Path
 from bs4 import BeautifulSoup
 from tululu import download_txt, download_image, parse_book_page
@@ -8,8 +10,8 @@ from urllib.parse import urljoin, unquote, urlparse
 Path("books").mkdir(parents=True, exist_ok=True)
 
 
-def check_for_redirect():
-    for number_books in range(1, 11):
+def check_for_redirect(start, end):
+    for number_books in range(start, end):
         url = f'https://tululu.org/b{number_books}/'
         response = requests.get(url)
         response.raise_for_status()
@@ -29,11 +31,7 @@ def check_for_redirect():
                     urljoin('https://tululu.org', soup.find(class_='bookimage').find('img')['src'])).path)
                 download_image(f'https://tululu.org{image}', image)
 
-                # for val in comments[0:]:
-                #     print(val.text.split('black')[0].split(')')[1])
-                # print()
-
-                parse_book_page(title_text_strip, find_genre)
+                parse_book_page(title_text, find_genre)
 
         except requests.exceptions.HTTPError():
             raise Exception(response.url).with_traceback()
@@ -41,4 +39,20 @@ def check_for_redirect():
     return response
 
 
-check_for_redirect()
+def number_books():
+    parser = argparse.ArgumentParser(
+        description='введите начальный и конечный номер скачиваемой книги'
+    )
+    parser.add_argument('-start', '--start_id', type=int, default=1, help='Начальный номер')
+    parser.add_argument('-end', '--end_id', type=int, default=11, help='Конечный номер')
+    return parser
+
+
+if __name__ == '__main__':
+    parser = number_books()
+    namespace = parser.parse_args(sys.argv[1:])
+
+    for _ in range(namespace.start_id):
+        start = namespace.start_id
+        end = namespace.end_id+1
+    check_for_redirect(start, end)
