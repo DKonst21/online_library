@@ -29,3 +29,10 @@ def download_image(url, filename, folder='image/'):
     #     file.write(response.content)
     # return path
 
+
+def parse_book_page(title_text_strip, find_genre):
+    print(f'Заголовок: {title_text_strip}')
+
+    for genre in find_genre[1:2]:
+        print(genre.find('a')['title'].split('-')[0])
+    print()
