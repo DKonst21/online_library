@@ -37,7 +37,7 @@ def check_for_redirect(start, end):
     return response
 
 
-def number_books():
+def create_parser():
     parser = argparse.ArgumentParser(
         description='введите начальный и конечный номер скачиваемой книги'
     )
@@ -52,7 +52,7 @@ def main():
 
 if __name__ == '__main__':
     main()
-    parser = number_books()
+    parser = create_parser()
     namespace = parser.parse_args(sys.argv[1:])
 
     for _ in range(namespace.start_id):
