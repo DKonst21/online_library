@@ -58,7 +58,4 @@ if __name__ == '__main__':
     parser = create_parser()
     args = parser.parse_args(sys.argv[1:])
 
-    for _ in range(args.start_id):
-        start = args.start_id
-        end = args.end_id+1
-    check_for_redirect(start, end)
+    check_for_redirect(args.start_id, args.end_id+1)
