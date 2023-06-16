@@ -61,6 +61,16 @@ def get_join_url():
     return urljoin('https://tululu.org', soup.find(class_='bookimage').find('img')['src'])
 
 
+def get_responce(url):
+    response = requests.get(url, allow_redirects=False)
+    try:
+        if response.status_code:
+            print(response.history)
+            return response
+    except requests.exceptions.HTTPError():
+        raise Exception(response.url).with_traceback()
+
+
 def main():
     Path("books").mkdir(parents=True, exist_ok=True)
 
@@ -71,8 +81,7 @@ if __name__ == '__main__':
     args = parser.parse_args(sys.argv[1:])
     for number_book in range(args.start_id, args.end_id):
         url = f'https://tululu.org/b{number_book}/'
-        response = requests.get(url)
-        response.raise_for_status()
+        response = get_responce(url)
 
         # parsing_book_comments(response)
         parsing_book_genre(response)
