@@ -39,7 +39,10 @@ def check_for_redirect(start, end):
 
 def create_parser():
     parser = argparse.ArgumentParser(
-        description='введите начальный и конечный номер скачиваемой книги'
+        description='Скрипт имеет два необязательных аргумента:'
+                    '--start - начальный id-номер скачиваемой книги;'
+                    '--end - конечный id-номер.'
+                    'По умолчанию скачиваются книги с id-номерами с первого по десятый включительно.'
     )
     parser.add_argument('-start', '--start_id', type=int, default=1, help='Начальный номер')
     parser.add_argument('-end', '--end_id', type=int, default=11, help='Конечный номер')
