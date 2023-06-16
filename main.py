@@ -7,9 +7,6 @@ from tululu import download_txt, download_image, parse_book_page, get_comments
 from urllib.parse import urljoin, unquote, urlparse
 
 
-Path("books").mkdir(parents=True, exist_ok=True)
-
-
 def check_for_redirect(start, end):
     for number_books in range(start, end):
         url = f'https://tululu.org/b{number_books}/'
@@ -49,7 +46,12 @@ def number_books():
     return parser
 
 
+def main():
+    Path("books").mkdir(parents=True, exist_ok=True)
+
+
 if __name__ == '__main__':
+    main()
     parser = number_books()
     namespace = parser.parse_args(sys.argv[1:])
 
