@@ -56,9 +56,9 @@ def main():
 if __name__ == '__main__':
     main()
     parser = create_parser()
-    namespace = parser.parse_args(sys.argv[1:])
+    args = parser.parse_args(sys.argv[1:])
 
-    for _ in range(namespace.start_id):
-        start = namespace.start_id
-        end = namespace.end_id+1
+    for _ in range(args.start_id):
+        start = args.start_id
+        end = args.end_id+1
     check_for_redirect(start, end)
