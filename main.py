@@ -1,6 +1,7 @@
 import requests
 import argparse
 import sys
+import time
 from pathlib import Path
 from bs4 import BeautifulSoup
 from tululu import download_txt, download_image
@@ -8,11 +9,10 @@ from urllib.parse import urljoin, unquote, urlparse
 
 
 def check_for_redirect(response):
-    try:
-        if not response.history:
-            return response
-    except requests.exceptions.HTTPError():
-        raise Exception(response.url).with_traceback()
+    if not response.history:
+        return response
+    else:
+        return requests.HTTPError()
 
 
 def create_parser():
@@ -27,7 +27,7 @@ def create_parser():
     return parser
 
 
-def download_text_book(response):
+def get_name_book(response):
     soup = BeautifulSoup(response.text, 'lxml')
     title_tag = soup.find('h1')
     title_text = title_tag.text.split('::')
@@ -35,38 +35,41 @@ def download_text_book(response):
     return title_text_strip
 
 
-def get_join_url():
+def get_join_url(response):
     soup = BeautifulSoup(response.text, 'lxml')
     directory = soup.find(class_='bookimage').find('img')['src'].split('/')[1]
     return urljoin(f'https://tululu.org{directory}', soup.find(class_='bookimage').find('img')['src'])
 
 
-def get_responce(url):
+def get_response(url):
     response = requests.get(url, allow_redirects=False)
-    try:
-        if response.status_code:
-            return response
-    except requests.exceptions.HTTPError():
-        raise Exception(response.url).with_traceback()
+    return response
 
 
 def main():
-    try:
-        Path("books").mkdir(parents=True, exist_ok=True)
-    except requests.exceptions.ConnectionError:
-        """A Connection error occurred."""
+    Path("books").mkdir(parents=True, exist_ok=True)
+    parser = create_parser()
+    args = parser.parse_args(sys.argv[1:])
+    for book_number in range(args.start_id, args.end_id + 1):
+        url = f'https://tululu.org/b{book_number}/'
+        payload = {"id": book_number}
+        url_text_book = requests.get('https://tululu.org/txt.php', params=payload).url
+        response = get_response(url)
+        try:
+            response.raise_for_status()
+            check_for_redirect(get_response(url_text_book))
+            download_txt(url_text_book, get_name_book(response))
+            path_image = unquote(urlparse(get_join_url(response)).path)
+            download_image(f'https://tululu.org{path_image}', path_image)
+
+        except requests.HTTPError:
+            print(f'Книга с id {book_number} не найдена...\n', file=sys.stderr)
+            continue
+        except requests.ConnectionError:
+            print('Соединение с сайтом прервано, пробую продолжить работу...')
+            time.sleep(5)
+            continue
 
 
 if __name__ == '__main__':
     main()
-    parser = create_parser()
-    args = parser.parse_args(sys.argv[1:])
-    for book_number in range(args.start_id, args.end_id+1):
-        url = f'https://tululu.org/b{book_number}/'
-        url_text_book = f'https://tululu.org/txt.php?id={book_number}/'
-        response = get_responce(url)
-
-        if check_for_redirect(response):
-            download_txt(url_text_book, download_text_book(response))
-            image = unquote(urlparse(get_join_url()).path)
-            download_image(f'https://tululu.org{image}', image)
