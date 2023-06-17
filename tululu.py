@@ -7,8 +7,8 @@ def download_txt(url, filename, folder='books/'):
     response = requests.get(url)
     response.raise_for_status()
     os.makedirs('{}'.format(folder), exist_ok=True)
-    name_split = filename.split('.')
-    name = sanitize_filename(f'{name_split[0]}.txt')
+    split_name = filename.split('.')
+    name = sanitize_filename(f'{split_name[0]}.txt')
     path = os.path.join(folder, name)
 
     with open(path, 'wb') as file:
@@ -30,7 +30,7 @@ def download_image(url, filename, folder='image/'):
     return path
 
 
-def parse_book_page(title_text, find_genre):
+def printing_book_data(title_text, find_genre):
     print(f'Название: {title_text[0].strip()}')
     print(f'Автор: {title_text[1].strip()}')
 
