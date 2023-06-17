@@ -1,6 +1,7 @@
 import requests
 import os
 from pathvalidate import sanitize_filename
+from bs4 import BeautifulSoup
 
 
 def download_txt(url, filename, folder='books/'):
@@ -30,11 +31,17 @@ def download_image(url, filename, folder='image/'):
     return path
 
 
-def printing_book_data(title_text, find_genre):
+def get_book_genre(response):
+    soup = BeautifulSoup(response.text, 'lxml')
+    genre = soup.find_all(class_='d_book')
+    return genre
+
+
+def printing_book_data(title_text, genres):
     print(f'Название: {title_text[0].strip()}')
     print(f'Автор: {title_text[1].strip()}')
 
-    for genre in find_genre[1:2]:
+    for genre in genres[1:2]:
         print(genre.find('a')['title'].split('-')[0])
     print()
 

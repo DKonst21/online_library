@@ -35,12 +35,6 @@ def download_text_book(response):
     return title_text_strip
 
 
-def parsing_book_genre(response):
-    soup = BeautifulSoup(response.text, 'lxml')
-    genre = soup.find_all(class_='d_book')
-    return genre
-
-
 def get_join_url():
     soup = BeautifulSoup(response.text, 'lxml')
     directory = soup.find(class_='bookimage').find('img')['src'].split('/')[1]
