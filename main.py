@@ -4,6 +4,7 @@ import sys
 import time
 from pathlib import Path
 from bs4 import BeautifulSoup
+from pathvalidate import sanitize_filename
 from parse_tululu import download_txt, download_image, check_for_redirect
 from urllib.parse import urljoin, unquote, urlparse
 
@@ -18,6 +19,46 @@ def create_parser():
     parser.add_argument('-start', '--start_id', type=int, default=1, help='Начальный номер')
     parser.add_argument('-end', '--end_id', type=int, default=10, help='Конечный номер')
     return parser
+
+
+def parse_book_page(book_page_response, book_page_url):
+    bookpage_soup = BeautifulSoup(book_page_response.text, 'lxml')
+
+    text_link_selector = 'table.d_book a'
+    book_text_link = urljoin(book_page_url, bookpage_soup.select(text_link_selector)[-3]['href'])
+    if '_votes' in book_text_link:
+        raise requests.HTTPError()
+
+    title_selector = 'h1'
+    title, author = bookpage_soup.select(title_selector)[0].text.split('::')
+    title = title.strip()
+
+    genre_selector = 'span.d_book a'
+    genres = bookpage_soup.select(genre_selector)
+    book_genres = [genre.text for genre in genres]
+
+    comments_selector = '.texts span.black'
+    comments = bookpage_soup.select(comments_selector)
+    book_comments = [comment.text for comment in comments]
+
+    book_cover_selector = '.bookimage img'
+    book_cover = bookpage_soup.select(book_cover_selector)[0]['src']
+    book_cover_link = urljoin(book_page_url, book_cover)
+    book_cover_filename = book_cover.split('/')[2]
+
+    book_text_filename = sanitize_filename(title).replace(' ', '_')
+
+    book_description = {
+        'title': title,
+        'author': author.strip(),
+        'book_cover_link': book_cover_link,
+        'book_cover_filename': book_cover_filename,
+        'book_text_filename': f'{book_text_filename}.txt',
+        'book_text_link': book_text_link,
+        'book_genres': book_genres,
+        'book_comments': book_comments,
+    }
+    return book_description
 
 
 def get_name_book(response):
