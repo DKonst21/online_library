@@ -27,27 +27,27 @@ def check_for_redirect(response):
 
 
 def parse_book_page(book_page_response, book_page_url):
-    bookpage_soup = BeautifulSoup(book_page_response.text, 'lxml')
+    book_page_soup = BeautifulSoup(book_page_response.text, 'lxml')
 
     text_link_selector = 'table.d_book a'
-    book_text_link = urljoin(book_page_url, bookpage_soup.select(text_link_selector)[-3]['href'])
+    book_text_link = urljoin(book_page_url, book_page_soup.select(text_link_selector)[-3]['href'])
     if '_votes' in book_text_link:
         raise requests.HTTPError()
 
     title_selector = 'h1'
-    title, author = bookpage_soup.select(title_selector)[0].text.split('::')
+    title, author = book_page_soup.select(title_selector)[0].text.split('::')
     title = title.strip()
 
     genre_selector = 'span.d_book a'
-    genres = bookpage_soup.select(genre_selector)
+    genres = book_page_soup.select(genre_selector)
     book_genres = [genre.text for genre in genres]
 
     comments_selector = '.texts span.black'
-    comments = bookpage_soup.select(comments_selector)
+    comments = book_page_soup.select(comments_selector)
     book_comments = [comment.text for comment in comments]
 
     book_cover_selector = '.bookimage img'
-    book_cover = bookpage_soup.select(book_cover_selector)[0]['src']
+    book_cover = book_page_soup.select(book_cover_selector)[0]['src']
     book_cover_link = urljoin(book_page_url, book_cover)
     book_cover_filename = book_cover.split('/')[2]
 
@@ -74,7 +74,6 @@ def save_content(file_content, filename, folder):
 
 
 def main():
-    Path("books").mkdir(parents=True, exist_ok=True)
     parser = create_parser()
     args = parser.parse_args(sys.argv[1:])
     for book_number in range(args.start_id, args.end_id + 1):
