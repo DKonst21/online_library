@@ -9,10 +9,8 @@ from urllib.parse import urljoin, unquote, urlparse
 
 
 def check_for_redirect(response):
-    if not response.history:
-        return response
-    else:
-        return requests.HTTPError()
+    if response.history:
+        raise requests.HTTPError()
 
 
 def create_parser():
