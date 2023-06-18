@@ -4,13 +4,8 @@ import sys
 import time
 from pathlib import Path
 from bs4 import BeautifulSoup
-from parse_tululu import download_txt, download_image
+from parse_tululu import download_txt, download_image, check_for_redirect
 from urllib.parse import urljoin, unquote, urlparse
-
-
-def check_for_redirect(response):
-    if response.history:
-        raise requests.HTTPError()
 
 
 def create_parser():
