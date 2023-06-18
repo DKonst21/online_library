@@ -69,20 +69,6 @@ def save_content(file_content, filename, folder):
         file.write(file_content.content)
 
 
-def get_name_book(response):
-    soup = BeautifulSoup(response.text, 'lxml')
-    title_tag = soup.find('h1')
-    title_text = title_tag.text.split('::')
-    title_text_strip = title_text[0].strip()
-    return title_text_strip
-
-
-def get_join_url(response):
-    soup = BeautifulSoup(response.text, 'lxml')
-    directory = soup.find(class_='bookimage').find('img')['src'].split('/')[1]
-    return urljoin(f'https://tululu.org{directory}', soup.find(class_='bookimage').find('img')['src'])
-
-
 def main():
     Path("books").mkdir(parents=True, exist_ok=True)
     parser = create_parser()
