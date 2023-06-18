@@ -2,6 +2,7 @@ import requests
 import argparse
 import sys
 import time
+import os
 from pathlib import Path
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
@@ -61,6 +62,13 @@ def parse_book_page(book_page_response, book_page_url):
     return book_description
 
 
+def save_content(file_content, filename, folder):
+    os.makedirs(folder, exist_ok=True)
+    file_path = os.path.join(folder, filename)
+    with open(file_path, 'wb') as file:
+        file.write(file_content.content)
+
+
 def get_name_book(response):
     soup = BeautifulSoup(response.text, 'lxml')
     title_tag = soup.find('h1')
@@ -80,16 +88,27 @@ def main():
     parser = create_parser()
     args = parser.parse_args(sys.argv[1:])
     for book_number in range(args.start_id, args.end_id + 1):
-        url = f'https://tululu.org/b{book_number}/'
-        payload = {"id": book_number}
-        url_text_book = requests.get('https://tululu.org/txt.php', params=payload).url
+        book_page_url = f"https://tululu.org/b{book_number}/"
+        payload = {'id': book_number}
         try:
-            response = requests.get(url, allow_redirects=False)
-            response.raise_for_status()
-            check_for_redirect(requests.get(url_text_book, allow_redirects=False))
-            download_txt(url_text_book, get_name_book(response))
-            path_image = unquote(urlparse(get_join_url(response)).path)
-            download_image(f'https://tululu.org{path_image}', path_image)
+            book_page_response = requests.get(book_page_url)
+            book_page_response.raise_for_status()
+            check_for_redirect(book_page_response)
+
+            book_description = parse_book_page(book_page_response, book_page_url)
+            print(book_description)
+            print(f'Заголовок: {book_number}. {book_description["title"]}\n\
+                    Жанры: {book_description["book_genres"]}\n')
+
+            book_cover_image = requests.get(book_description['book_cover_link'])
+            book_cover_image.raise_for_status()
+            check_for_redirect(book_cover_image)
+            save_content(book_cover_image, book_description['book_cover_filename'], folder='images/')
+
+            book_text_response = requests.get(book_description['book_text_link'], params=payload)
+            book_text_response.raise_for_status()
+            check_for_redirect(book_text_response)
+            save_content(book_text_response, book_description['book_text_filename'], folder='books/')
 
         except requests.HTTPError:
             print(f'Книга с id {book_number} не найдена...\n', file=sys.stderr)
