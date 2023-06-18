@@ -6,7 +6,6 @@ import os
 from pathlib import Path
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
-from parse_tululu import check_for_redirect
 from urllib.parse import urljoin
 
 
@@ -20,6 +19,11 @@ def create_parser():
     parser.add_argument('-start', '--start_id', type=int, default=1, help='Начальный номер')
     parser.add_argument('-end', '--end_id', type=int, default=10, help='Конечный номер')
     return parser
+
+
+def check_for_redirect(response):
+    if response.history:
+        raise requests.HTTPError()
 
 
 def parse_book_page(book_page_response, book_page_url):
