@@ -6,8 +6,8 @@ import os
 from pathlib import Path
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
-from parse_tululu import download_txt, download_image, check_for_redirect
-from urllib.parse import urljoin, unquote, urlparse
+from parse_tululu import check_for_redirect
+from urllib.parse import urljoin
 
 
 def create_parser():
