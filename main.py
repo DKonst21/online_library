@@ -49,8 +49,8 @@ def main():
         url = f'https://tululu.org/b{book_number}/'
         payload = {"id": book_number}
         url_text_book = requests.get('https://tululu.org/txt.php', params=payload).url
-        response = requests.get(url, allow_redirects=False)
         try:
+            response = requests.get(url, allow_redirects=False)
             response.raise_for_status()
             check_for_redirect(requests.get(url_text_book, allow_redirects=False))
             download_txt(url_text_book, get_name_book(response))
