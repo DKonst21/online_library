@@ -4,7 +4,7 @@ import sys
 import time
 from pathlib import Path
 from bs4 import BeautifulSoup
-from tululu import download_txt, download_image
+from parse_tululu import download_txt, download_image
 from urllib.parse import urljoin, unquote, urlparse
 
 
@@ -41,11 +41,6 @@ def get_join_url(response):
     return urljoin(f'https://tululu.org{directory}', soup.find(class_='bookimage').find('img')['src'])
 
 
-def get_response(url):
-    response = requests.get(url, allow_redirects=False)
-    return response
-
-
 def main():
     Path("books").mkdir(parents=True, exist_ok=True)
     parser = create_parser()
@@ -54,10 +49,10 @@ def main():
         url = f'https://tululu.org/b{book_number}/'
         payload = {"id": book_number}
         url_text_book = requests.get('https://tululu.org/txt.php', params=payload).url
-        response = get_response(url)
+        response = requests.get(url, allow_redirects=False)
         try:
             response.raise_for_status()
-            check_for_redirect(get_response(url_text_book))
+            check_for_redirect(requests.get(url_text_book, allow_redirects=False))
             download_txt(url_text_book, get_name_book(response))
             path_image = unquote(urlparse(get_join_url(response)).path)
             download_image(f'https://tululu.org{path_image}', path_image)
