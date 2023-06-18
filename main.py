@@ -3,7 +3,6 @@ import argparse
 import sys
 import time
 import os
-from pathlib import Path
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 from urllib.parse import urljoin
