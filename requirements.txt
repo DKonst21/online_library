@@ -1,9 +1,4 @@
 requests~=2.31.0
 beautifulsoup4~=4.12.2
 pathvalidate~=3.0.0
-lxml==4.9.2
 urllib3==1.26.13
-tqdm==4.64.1
-Jinja2==3.1.2
-livereload==2.6.3
-more-itertools==9.0.0
