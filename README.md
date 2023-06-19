@@ -10,7 +10,7 @@
 - Скачайте архив с кодом ([ссылка для скачивания](https://github.com/DKonst21/online_library)) и распакуйте его.
 - Установите необходимые библиотеки
 ```
-python3 -m pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 ### Аргументы main.py
