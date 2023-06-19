@@ -84,7 +84,6 @@ def main():
             check_for_redirect(book_page_response)
 
             book_description = parse_book_page(book_page_response, book_page_url)
-            print(book_description)
             print(f'Заголовок: {book_number}. {book_description["title"]}\n\
                     Жанры: {book_description["book_genres"]}\n')
 
