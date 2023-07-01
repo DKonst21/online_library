@@ -8,6 +8,7 @@ from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup as BS
+from tqdm import tqdm
 
 from main import save_content, check_for_redirect, parse_book_page
 
@@ -88,3 +89,10 @@ if __name__ == '__main__':
     parser.add_argument('--json_path', nargs='?', type=str, default='',
                         help='Путь к *json файлу с результатами | The path to the *json file with the results')
     args = parser.parse_args()
+
+    logging.info(f"Сбор ссылок на книги со страниц по жанрам")
+    for page_index in tqdm(range(args.start_page, args.end_page), ncols=100):
+        category_page_url = f'https://tululu.org/l55/{page_index}'
+        category_page_response = get_category_response(category_page_url)
+        links_per_page = parse_book_links(category_page_response, category_page_url)
+        book_urls.extend(links_per_page)
