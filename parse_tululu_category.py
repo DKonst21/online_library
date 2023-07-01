@@ -1,5 +1,7 @@
 import argparse
+import json
 import logging
+import os
 import sys
 import time
 from urllib.parse import urljoin
@@ -7,7 +9,16 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup as BS
 
-from main import check_for_redirect
+from main import save_content, check_for_redirect, parse_book_page
+
+
+def save_json_file(book_descriptions, dest_folder=''):
+    filename = 'book_description.json'
+    if dest_folder:
+        os.makedirs(dest_folder, exist_ok=True)
+    folder_path = os.path.join(dest_folder, filename)
+    with open(folder_path, 'w') as file:
+        json.dump(book_descriptions, file, ensure_ascii=False)
 
 
 def parse_book_links(category_page_response, category_page_url):
@@ -27,7 +38,7 @@ def check_for_errors(func):
                 err_statistics.append(args[0])
                 break
             except requests.ConnectionError:
-                print('\nПохоже соединение с сайтом прервано, пробую продолжить работу...', file=sys.stderr)
+                print('\nCоединение с сайтом прервано, осуществляется попытка продолжить работу...', file=sys.stderr)
                 time.sleep(10)
     return wrapper
 
@@ -38,6 +49,27 @@ def get_category_response(category_page_url):
         category_page_response.raise_for_status()
         check_for_redirect(category_page_response)
         return category_page_response
+
+
+@check_for_errors
+def download_content(book_url, skip_imgs, skip_txt):
+    book_page_response = requests.get(book_url)
+    book_page_response.raise_for_status()
+    check_for_redirect(book_page_response)
+    book_description = parse_book_page(book_page_response, book_url)
+    book_descriptions.append(book_description)
+
+    if not skip_imgs:
+        book_cover_img = requests.get(book_description['book_cover_link'])
+        book_cover_img.raise_for_status()
+        check_for_redirect(book_cover_img)
+        save_content(book_cover_img, book_description['book_cover_filename'], folder='images/')
+
+    if not skip_txt:
+        book_text_response = requests.get(book_description['book_text_link'])
+        book_text_response.raise_for_status()
+        check_for_redirect(book_text_response)
+        save_content(book_text_response, book_description['book_text_filename'], folder='books/')
 
 
 if __name__ == '__main__':
