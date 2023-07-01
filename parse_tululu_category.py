@@ -85,4 +85,6 @@ if __name__ == '__main__':
                         help='Номер начальной страницы | First page\'s id')
     parser.add_argument('--end_page', nargs='?', type=int, default=702,
                         help='Номер финальной страницы | Last page\'s id')
+    parser.add_argument('--json_path', nargs='?', type=str, default='',
+                        help='Путь к *json файлу с результатами | The path to the *json file with the results')
     args = parser.parse_args()
