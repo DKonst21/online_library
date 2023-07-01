@@ -86,6 +86,12 @@ if __name__ == '__main__':
                         help='Номер начальной страницы | First page\'s id')
     parser.add_argument('--end_page', nargs='?', type=int, default=702,
                         help='Номер финальной страницы | Last page\'s id')
+    parser.add_argument('-skip_imgs', action='store_true',
+                        help='Не скачивать картинки | Skip downloading images')
+    parser.add_argument('-skip_txt', action='store_true',
+                        help='Не скачивать текст | Skip downloading texts')
+    parser.add_argument('--dest_folder', nargs='?', type=str, default='',
+                        help='Папка для скачивания | Download folder')
     parser.add_argument('--json_path', nargs='?', type=str, default='',
                         help='Путь к *json файлу с результатами | The path to the *json file with the results')
     args = parser.parse_args()
@@ -96,3 +102,14 @@ if __name__ == '__main__':
         category_page_response = get_category_response(category_page_url)
         links_per_page = parse_book_links(category_page_response, category_page_url)
         book_urls.extend(links_per_page)
+
+    logging.info(f"Сбор информации с указанных страниц / скачивание книг / обложек")
+    for book_url in tqdm(book_urls, ncols=100):
+        download_content(book_url, args.skip_imgs, args.skip_txt)
+
+    logging.info(f"Сохранение данных в JSON файл...")
+    save_json_file(book_descriptions)
+    if err_statistics:
+        logging.info(f"Не удалось найти данные страницы:")
+        [print(err_stats, file=sys.stderr) for err_stats in err_statistics]
+    logging.info(f"Готово...\n")
