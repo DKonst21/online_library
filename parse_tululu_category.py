@@ -7,7 +7,7 @@ import time
 from urllib.parse import urljoin
 
 import requests
-from bs4 import BeautifulSoup as BS
+from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 from main import save_content, check_for_redirect, parse_book_page
@@ -23,7 +23,7 @@ def save_json_file(book_descriptions, dest_folder=''):
 
 
 def parse_book_links(category_page_response, category_page_url):
-    category_page_soup = BS(category_page_response.text, 'lxml')
+    category_page_soup = BeautifulSoup(category_page_response.text, 'lxml')
     all_books_selector = '.d_book'
     all_books_id = category_page_soup.select(all_books_selector)
     book_links_per_page = [urljoin(category_page_url, book_id.a['href']) for book_id in all_books_id]
@@ -36,7 +36,7 @@ def check_for_errors(func):
             try:
                 return func(*args, **kwargs)
             except requests.HTTPError:
-                err_statistics.append(args[0])
+                error_statistics.append(args[0])
                 break
             except requests.ConnectionError:
                 print('\nCоединение с сайтом прервано, осуществляется попытка продолжить работу...', file=sys.stderr)
@@ -46,10 +46,10 @@ def check_for_errors(func):
 
 @check_for_errors
 def get_category_response(category_page_url):
-        category_page_response = requests.get(category_page_url)
-        category_page_response.raise_for_status()
-        check_for_redirect(category_page_response)
-        return category_page_response
+    category_page_response = requests.get(category_page_url)
+    category_page_response.raise_for_status()
+    check_for_redirect(category_page_response)
+    return category_page_response
 
 
 @check_for_errors
@@ -77,10 +77,12 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     book_urls = []
     book_descriptions = []
-    err_statistics = []
+    error_statistics = []
 
     parser = argparse.ArgumentParser(
-        description='''Скрипт предназначен для скачивания книг и их обложек с сайта "tululu.org" из раздела "фантастика".'''
+        description='''Скрипт предназначен для скачивания книг и их обложек с сайта "tululu.org" из раздела "фантастика"
+                    и информацию о названии книги, жанре, авторе, отзывах из комментариев, которая сохраняется в json 
+                    файл.'''
     )
     parser.add_argument('--start_page', nargs='?', type=int, default=1,
                         help='Номер начальной страницы | First page\'s id')
@@ -109,7 +111,7 @@ if __name__ == '__main__':
 
     logging.info(f"Сохранение данных в JSON файл...")
     save_json_file(book_descriptions)
-    if err_statistics:
+    if error_statistics:
         logging.info(f"Не удалось найти данные страницы:")
-        [print(err_stats, file=sys.stderr) for err_stats in err_statistics]
+        [print(err_stats, file=sys.stderr) for err_stats in error_statistics]
     logging.info(f"Готово...\n")
