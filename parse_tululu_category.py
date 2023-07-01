@@ -64,13 +64,13 @@ def download_content(book_url, skip_imgs, skip_txt):
         book_cover_img = requests.get(book_description['book_cover_link'])
         book_cover_img.raise_for_status()
         check_for_redirect(book_cover_img)
-        save_content(book_cover_img, book_description['book_cover_filename'], folder='images/')
+        save_content(book_cover_img, book_description['book_cover_filename'], args.dest_folder, folder='images/')
 
     if not skip_txt:
         book_text_response = requests.get(book_description['book_text_link'])
         book_text_response.raise_for_status()
         check_for_redirect(book_text_response)
-        save_content(book_text_response, book_description['book_text_filename'], folder='books/')
+        save_content(book_text_response, book_description['book_text_filename'], args.dest_folder, folder='books/')
 
 
 if __name__ == '__main__':

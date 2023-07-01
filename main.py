@@ -65,8 +65,9 @@ def parse_book_page(book_page_response, book_page_url):
     return book_description
 
 
-def save_content(file_content, filename, folder):
-    os.makedirs(folder, exist_ok=True)
+def save_content(file_content, filename, dest_folder, folder):
+    download_path = os.path.join(dest_folder, folder)
+    os.makedirs(download_path, exist_ok=True)
     file_path = os.path.join(folder, filename)
     with open(file_path, 'wb') as file:
         file.write(file_content.content)
@@ -90,12 +91,12 @@ def main():
             book_cover_image = requests.get(book_description['book_cover_link'])
             book_cover_image.raise_for_status()
             check_for_redirect(book_cover_image)
-            save_content(book_cover_image, book_description['book_cover_filename'], folder='images/')
+            save_content(book_cover_image, book_description['book_cover_filename'], args.dest_folder, folder='images/')
 
             book_text_response = requests.get(book_description['book_text_link'], params=payload)
             book_text_response.raise_for_status()
             check_for_redirect(book_text_response)
-            save_content(book_text_response, book_description['book_text_filename'], folder='books/')
+            save_content(book_text_response, book_description['book_text_filename'], args.dest_folder, folder='books/')
 
         except requests.HTTPError:
             print(f'Книга с id {book_number} не найдена...\n', file=sys.stderr)
