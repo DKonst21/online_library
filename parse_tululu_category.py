@@ -100,10 +100,13 @@ if __name__ == '__main__':
 
     logging.info(f"Сбор ссылок на книги со страниц по жанрам")
     for page_index in tqdm(range(args.start_page, args.end_page), ncols=100):
-        category_page_url = f'https://tululu.org/l55/{page_index}'
-        category_page_response = get_category_response(category_page_url)
-        links_per_page = parse_book_links(category_page_response, category_page_url)
-        book_urls.extend(links_per_page)
+        try:
+            category_page_url = f'https://tululu.org/l55/{page_index}'
+            category_page_response = get_category_response(category_page_url)
+            links_per_page = parse_book_links(category_page_response, category_page_url)
+            book_urls.extend(links_per_page)
+        except requests.exceptions.HTTPError:
+            print(f'Книга со страницы {page_index} не найдена...\n')
 
     logging.info(f"Сбор информации с указанных страниц / скачивание книг / обложек")
     for book_url in tqdm(book_urls, ncols=100):
