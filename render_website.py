@@ -25,9 +25,6 @@ def rebuild_page():
     for books_descriptions in paginated_book_descriptions:
         current_page_number = books_descriptions[0]
         grouped_books_descriptions = books_descriptions[1]
-        print(total_pages)
-        print(current_page_number)
-        print(grouped_books_descriptions)
         rendered_page = template.render(
             grouped_books_descriptions=grouped_books_descriptions,
             current_page_number=current_page_number,

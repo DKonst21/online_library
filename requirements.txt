@@ -3,3 +3,5 @@ beautifulsoup4~=4.12.2
 pathvalidate~=3.0.0
 lxml==4.9.2
 urllib3==1.26.13
+Jinja2==3.1.2
+livereload==2.6.3
