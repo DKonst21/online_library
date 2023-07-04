@@ -17,6 +17,7 @@ def create_parser():
     )
     parser.add_argument('-start', '--start_id', type=int, default=1, help='Начальный номер')
     parser.add_argument('-end', '--end_id', type=int, default=10, help='Конечный номер')
+    parser.add_argument('--dest_folder', type=str, default='', help='Папка для скачивания')
     return parser
 
 
