@@ -69,4 +69,4 @@ if __name__ == '__main__':
 
     server = Server()
     server.watch('template.html', rebuild_page)
-    server.serve(default_filename='pages/index1.html')
+    server.serve(default_filename='../../../Users/admin/Documents/GitHub/DKonst21.github.io/index1.html')
