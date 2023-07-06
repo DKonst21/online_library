@@ -8,9 +8,8 @@ from livereload import Server
 from more_itertools import chunked
 
 
-def get_book_descriptions(filename, dest_folder):
-    json_path = os.path.join(dest_folder, filename)
-    with open(json_path) as file:
+def get_book_descriptions(filepath):
+    with open(filepath) as file:
         books_descriptions = json.load(file)
     return books_descriptions
 
@@ -49,10 +48,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='''Скрипт создаёт страницы на основании собранных данных о книгах.'''
     )
-    parser.add_argument('--json_folder', nargs='?', type=str, default='',
-                        help='Директория файла *.json | *.json file directory')
-    parser.add_argument('--json_file', nargs='?', type=str, default='book_description.json',
-                        help='название файла *.json (с расширением) | *.json filename (with extension)')
+    parser.add_argument('--json_filepath', nargs='?', type=str, default='book_description.json',
+                        help='Расположение файла *.json (с расширением) | *.json File location (with extension)')
     args = parser.parse_args()
 
     env = Environment(
@@ -60,13 +57,13 @@ if __name__ == '__main__':
         autoescape=select_autoescape(['html', 'xml'])
     )
 
-    filename = args.json_file
+    filepath = args.json_filepath
     logging.warning("Получение информации из *.json")
-    books_descriptions = get_book_descriptions(filename, args.json_folder)
+    books_descriptions = get_book_descriptions(filepath)
     paginated_book_descriptions = paginate_book_descriptions(books_descriptions)
 
     rebuild_page()
 
     server = Server()
     server.watch('template.html', rebuild_page)
-    server.serve(default_filename='../../../Users/admin/Documents/GitHub/DKonst21.github.io/index1.html')
+    server.serve(root='.')
