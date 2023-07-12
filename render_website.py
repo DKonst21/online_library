@@ -58,7 +58,7 @@ if __name__ == '__main__':
     )
 
     filepath = args.json_filepath
-    logging.warning("Получение информации из *.json")
+    logging.warning(f"Получение информации из {filepath}")
     books_descriptions = get_book_descriptions(filepath)
     paginated_book_descriptions = paginate_book_descriptions(books_descriptions)
 
